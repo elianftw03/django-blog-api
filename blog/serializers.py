@@ -3,10 +3,25 @@ from django.contrib.auth.models import User
 from .models import Article, Comment
 
 
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "password"]
+
+    def create(self, validated_data):
+        return User.objects.create_user(
+            username=validated_data["username"],
+            email=validated_data.get("email", ""),
+            password=validated_data["password"],
+        )
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email']
+        fields = ["id", "username", "email"]
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -14,8 +29,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['id', 'article', 'author', 'content', 'created_at']
-        read_only_fields = ['author', 'created_at']
+        fields = ["id", "article", "author", "content", "created_at"]
+        read_only_fields = ["id", "article", "author", "created_at"]
 
 
 class ArticleSerializer(serializers.ModelSerializer):
@@ -24,5 +39,5 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ['id', 'title', 'content', 'author', 'category', 'created_at', 'comments']
-        read_only_fields = ['author', 'created_at']
+        fields = ["id", "title", "content", "author", "category", "created_at", "comments"]
+        read_only_fields = ["id", "author", "created_at"]
